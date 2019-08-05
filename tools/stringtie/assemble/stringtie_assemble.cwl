@@ -38,11 +38,27 @@ inputs:
     type: File
     inputBinding:
       prefix: -G
+  reference_only:
+    type: boolean?
+    label: "Only estimate the abundance of given reference transcripts"
+    doc: "Limits the processing of read alignments to only estimate and output the assembled transcripts matching the reference transcripts given with the -G option. With this option, read bundles with no reference transcripts will be entirely skipped, which may provide a considerable speed boost when the given set of reference transcripts is limited to a set of target genes, for example."
+    inputBinding:
+      prefix: -e
+  gene_tpm_output_filename:
+    type: string?
+    label: "Gene abundance estimation output file"
+    doc: "Gene abundances will be reported in the output file with the given name."
+    inputBinding:
+      prefix: -A
 outputs:
   assemble_output:
     type: File
     outputBinding:
       glob: $(inputs.output_filename)
+  gene_tpm_output:
+    type: File?
+    outputBinding:
+      glob: $(inputs.gene_tpm_output_filename)
 
 $namespaces:
   s: https://schema.org/

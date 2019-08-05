@@ -1,0 +1,6 @@
+trim_1: false  # type "boolean"
+show_help: false  # type "boolean"
+run_fastqc: false  # type "boolean"
+fq:  # array of type "File"
+  - class: File
+    path: a/file/path

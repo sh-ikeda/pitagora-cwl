@@ -15,11 +15,20 @@ inputs:
 
   ## Inputs for stringtie
   annotation: File
+  reference_only: boolean?
+  gene_tpm_output_filename: string?
+  output_filename: string?
 
 outputs:
   assemble_output:
     type: File
     outputSource: stringtie_assemble/assemble_output
+  gene_tpm_output:
+    type: File
+    outputSource: stringtie_assemble/gene_tpm_output
+  trim_report:
+    type: File[]
+    outputSource: trim_galore-se/trim_galore_output_report
 
 steps:
   download-sra:
@@ -38,12 +47,20 @@ steps:
     out:
       [fastqFiles]
 
+  trim_galore-se:
+    run: trim_galore-se.cwl
+    in:
+      fq: pfastq-dump/fastqFiles
+      trim_1: { default: true }
+    out:
+      [trim_galore_output_report, trim_galore_output_fq]
+
   hisat2_mapping:
     run: hisat2_mapping_se.cwl
     in:
       hisat2_idx_basedir: hisat2_idx_basedir
       hisat2_idx_basename: hisat2_idx_basename
-      fq: pfastq-dump/fastqFiles
+      fq: trim_galore-se/trim_galore_output_fq
       nthreads: nthreads
     out:
       [hisat2_sam]
@@ -67,7 +84,10 @@ steps:
       input_bam: samtools_sort/sorted_bamfile
       nthreads: nthreads
       annotation: annotation
-    out: [assemble_output]
+      reference_only: reference_only
+      gene_tpm_output_filename: gene_tpm_output_filename
+      output_filename: output_filename
+    out: [gene_tpm_output, assemble_output]
 
 $namespaces:
   s: https://schema.org/
